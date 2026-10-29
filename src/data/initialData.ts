@@ -1,0 +1,606 @@
+import { AssociationConfig, Member, ContributionPayment, ExpenseOrAid, DiscussionMessage } from '../types';
+
+export const initialConfig: AssociationConfig = {
+  name: "Association Jookolante d'Entraide & de Solidarité",
+  sigle: "A.J.E.S",
+  devise: "FCFA",
+  defaultMonthlyDues: 10000,
+  dueDayOfMonth: 5,
+  treasurerName: "Moussa Diop",
+  treasurerPhone: "+221 77 450 12 34",
+  presidentName: "Fatou Bintou Sow",
+  waveNumber: "+221 77 450 12 34",
+  orangeMoneyNumber: "+221 78 610 88 99",
+  bankRib: "SN012 01001 02345678901 45",
+  slogan: "Nio Far - Main dans la main pour le progrès mutuel",
+  foundationYear: 2022,
+  location: "Dakar, Sénégal (et Diaspora)",
+  secoursPercentage: 20 // 20% affecté d'office à la caisse de secours
+};
+
+export const initialMembers: Member[] = [
+  {
+    id: "mem-01",
+    firstName: "Fatou Bintou",
+    lastName: "Sow",
+    phone: "+221 77 123 45 67",
+    email: "fatou.sow@jookolante.sn",
+    role: "Président(e)",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-01-15",
+    address: "Sacré-Cœur 3, Villa 124",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Cadre Financier",
+    notes: "Membre fondatrice, très active dans les coordinations."
+  },
+  {
+    id: "mem-02",
+    firstName: "Moussa",
+    lastName: "Diop",
+    phone: "+221 77 450 12 34",
+    email: "moussa.diop@jookolante.sn",
+    role: "Trésorier(ère)",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-01-15",
+    address: "Liberté 6 Extension",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Comptable Agréé",
+    notes: "Gestionnaire de la caisse Wave et du compte bancaire."
+  },
+  {
+    id: "mem-03",
+    firstName: "Cheikh Tidiane",
+    lastName: "Sy",
+    phone: "+221 76 345 89 01",
+    email: "cheikh.sy@gmail.com",
+    role: "Secrétaire Général(e)",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-02-01",
+    address: "Point E, Rue 3",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Ingénieur Télécoms",
+    notes: "Rédige les procès-verbaux d'assemblée."
+  },
+  {
+    id: "mem-04",
+    firstName: "Mariama",
+    lastName: "Bâ",
+    phone: "+221 78 230 45 67",
+    email: "mariama.ba@outlook.com",
+    role: "Commissaire aux Comptes",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-02-10",
+    address: "Mermoz Pyrotechnie",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Auditrice Interne",
+    notes: "Supervise la conformité des quittances."
+  },
+  {
+    id: "mem-05",
+    firstName: "Ibrahima",
+    lastName: "Konaté",
+    phone: "+221 77 890 12 34",
+    email: "ibrahima.konate@yahoo.fr",
+    role: "Responsable Organisation",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-03-01",
+    address: "Médina, Rue 22",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Chef d'Entreprise Logistique",
+    notes: "Chargé des événements et de la logistique des AG."
+  },
+  {
+    id: "mem-06",
+    firstName: "Aïssatou",
+    lastName: "Diallo",
+    phone: "+221 77 654 32 10",
+    email: "aissatou.diallo@orange.sn",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-04-12",
+    address: "Quartier Escale",
+    city: "Thiès",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Enseignante Chercheuse",
+    notes: "Représentante de l'antenne régionale de Thiès."
+  },
+  {
+    id: "mem-07",
+    firstName: "Abdoulaye",
+    lastName: "Wade Sène",
+    phone: "+221 70 888 77 66",
+    email: "abdoulaye.sene@gmail.com",
+    role: "Doyen / Conseiller",
+    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-01-15",
+    address: "Ouakam, Cité Avion",
+    city: "Dakar",
+    monthlyPledge: 15000,
+    status: "active",
+    occupation: "Inspecteur de l'Éducation à la retraite",
+    notes: "Médiateur du bureau et doyen d'âge."
+  },
+  {
+    id: "mem-08",
+    firstName: "Khadija",
+    lastName: "Ndiaye",
+    phone: "+221 77 912 34 56",
+    email: "khadija.ndiaye@gmail.com",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2022-06-20",
+    address: "Ngor Almadies",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Pharmacienne",
+    notes: "Très ponctuelle, paie souvent par Wave."
+  },
+  {
+    id: "mem-09",
+    firstName: "El Hadji Malick",
+    lastName: "Fall",
+    phone: "+33 6 12 34 56 78",
+    email: "elhadji.fall@diaspora.sn",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2023-01-10",
+    address: "14 Rue de Tolbiac, 75013 Paris",
+    city: "Paris (Diaspora)",
+    monthlyPledge: 15000,
+    status: "active",
+    occupation: "Architecte Cloud",
+    notes: "Cotise en tranches trimestrielles par virement."
+  },
+  {
+    id: "mem-10",
+    firstName: "Ousmane",
+    lastName: "Gueye",
+    phone: "+221 78 543 21 09",
+    email: "ousmane.gueye@gmail.com",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2023-03-15",
+    address: "Grand Yoff",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Commerçant Import-Export",
+    notes: "Préfère les règlements par Orange Money."
+  },
+  {
+    id: "mem-11",
+    firstName: "Seynabou",
+    lastName: "Traoré",
+    phone: "+221 77 312 90 45",
+    email: "seynabou.traore@yahoo.com",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2023-07-01",
+    address: "HLM Grand Médine",
+    city: "Dakar",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Graphiste & Communication",
+    notes: "Gère les visuels des affiches de l'association."
+  },
+  {
+    id: "mem-12",
+    firstName: "Babacar",
+    lastName: "Mbodj",
+    phone: "+221 76 990 01 22",
+    email: "babacar.mbodj@gmail.com",
+    role: "Membre Actif",
+    avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150&auto=format&fit=crop&q=80",
+    joinedDate: "2023-09-10",
+    address: "Bambey Escale",
+    city: "Bambey",
+    monthlyPledge: 10000,
+    status: "active",
+    occupation: "Agronome",
+    notes: "En déplacement fréquent pour ses travaux de recherche."
+  }
+];
+
+export const initialPayments: ContributionPayment[] = [
+  // Payments for current month: October 2026
+  {
+    id: "pay-101",
+    receiptNumber: "REC-2026-101",
+    memberId: "mem-01",
+    memberName: "Fatou Bintou Sow",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-10-02T10:15:00Z",
+    paymentMethod: "Wave",
+    transactionRef: "WAV-984210",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle",
+    note: "Paiement mensuel ponctuel"
+  },
+  {
+    id: "pay-102",
+    receiptNumber: "REC-2026-102",
+    memberId: "mem-02",
+    memberName: "Moussa Diop",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-10-03T09:00:00Z",
+    paymentMethod: "Wave",
+    transactionRef: "WAV-984255",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-103",
+    receiptNumber: "REC-2026-103",
+    memberId: "mem-03",
+    memberName: "Cheikh Tidiane Sy",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-10-04T14:30:00Z",
+    paymentMethod: "Orange Money",
+    transactionRef: "OM-874512",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-104",
+    receiptNumber: "REC-2026-104",
+    memberId: "mem-04",
+    memberName: "Mariama Bâ",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-10-05T11:40:00Z",
+    paymentMethod: "Wave",
+    transactionRef: "WAV-985112",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-105",
+    receiptNumber: "REC-2026-105",
+    memberId: "mem-07",
+    memberName: "Abdoulaye Wade Sène",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 15000,
+    paymentDate: "2026-10-05T16:20:00Z",
+    paymentMethod: "Espèces",
+    transactionRef: "CASH-REC-07",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle",
+    note: "Remis en main propre lors de la visite amicale"
+  },
+  {
+    id: "pay-106",
+    receiptNumber: "REC-2026-106",
+    memberId: "mem-08",
+    memberName: "Khadija Ndiaye",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-10-06T08:12:00Z",
+    paymentMethod: "Wave",
+    transactionRef: "WAV-986420",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-107",
+    receiptNumber: "REC-2026-107",
+    memberId: "mem-09",
+    memberName: "El Hadji Malick Fall",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 15000,
+    paymentDate: "2026-10-01T12:00:00Z",
+    paymentMethod: "Virement",
+    transactionRef: "VIR-FR26-0091",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle",
+    note: "Cotisation de la diaspora pour octobre"
+  },
+  {
+    id: "pay-108",
+    receiptNumber: "REC-2026-108",
+    memberId: "mem-01",
+    memberName: "Fatou Bintou Sow",
+    periodMonth: 10,
+    periodYear: 2026,
+    amount: 5000,
+    paymentDate: "2026-10-10T15:00:00Z",
+    paymentMethod: "Wave",
+    transactionRef: "WAV-987110",
+    recordedBy: "Moussa Diop",
+    type: "caisse_secours",
+    note: "Don volontaire pour le fonds d'urgence santé"
+  },
+
+  // Past payments: September 2026
+  {
+    id: "pay-091",
+    receiptNumber: "REC-2026-091",
+    memberId: "mem-01",
+    memberName: "Fatou Bintou Sow",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-02T10:00:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-092",
+    receiptNumber: "REC-2026-092",
+    memberId: "mem-02",
+    memberName: "Moussa Diop",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-03T11:00:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-093",
+    receiptNumber: "REC-2026-093",
+    memberId: "mem-03",
+    memberName: "Cheikh Tidiane Sy",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-04T12:00:00Z",
+    paymentMethod: "Orange Money",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-094",
+    receiptNumber: "REC-2026-094",
+    memberId: "mem-04",
+    memberName: "Mariama Bâ",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-05T09:30:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-095",
+    receiptNumber: "REC-2026-095",
+    memberId: "mem-05",
+    memberName: "Ibrahima Konaté",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-08T18:00:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-096",
+    receiptNumber: "REC-2026-096",
+    memberId: "mem-06",
+    memberName: "Aïssatou Diallo",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-05T14:15:00Z",
+    paymentMethod: "Orange Money",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-097",
+    receiptNumber: "REC-2026-097",
+    memberId: "mem-07",
+    memberName: "Abdoulaye Wade Sène",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 15000,
+    paymentDate: "2026-09-04T17:00:00Z",
+    paymentMethod: "Espèces",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-098",
+    receiptNumber: "REC-2026-098",
+    memberId: "mem-08",
+    memberName: "Khadija Ndiaye",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-05T10:00:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-099",
+    receiptNumber: "REC-2026-099",
+    memberId: "mem-09",
+    memberName: "El Hadji Malick Fall",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 15000,
+    paymentDate: "2026-09-01T08:00:00Z",
+    paymentMethod: "Virement",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-100",
+    receiptNumber: "REC-2026-100",
+    memberId: "mem-10",
+    memberName: "Ousmane Gueye",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-12T16:00:00Z",
+    paymentMethod: "Orange Money",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  },
+  {
+    id: "pay-100b",
+    receiptNumber: "REC-2026-100B",
+    memberId: "mem-11",
+    memberName: "Seynabou Traoré",
+    periodMonth: 9,
+    periodYear: 2026,
+    amount: 10000,
+    paymentDate: "2026-09-15T19:00:00Z",
+    paymentMethod: "Wave",
+    recordedBy: "Moussa Diop",
+    type: "cotisation_mensuelle"
+  }
+];
+
+export const initialExpenses: ExpenseOrAid[] = [
+  {
+    id: "exp-01",
+    title: "Soutien de Solidarité - Mariage Frère Babacar Mbodj",
+    category: "Solidarité Familiale",
+    beneficiary: "Babacar Mbodj",
+    amount: 50000,
+    date: "2026-08-20",
+    approvedBy: "Bureau Exécutif (Fatou Sow)",
+    status: "validé",
+    description: "Enveloppe de félicitations et soutien fraternel au nom de tous les membres de l'association."
+  },
+  {
+    id: "exp-02",
+    title: "Aide Urgence Santé - Hospitalisation mère Sœur Aïssatou",
+    category: "Secours & Urgence",
+    beneficiary: "Aïssatou Diallo",
+    amount: 75000,
+    date: "2026-09-14",
+    approvedBy: "Bureau Exécutif (Moussa Diop / Fatou Sow)",
+    status: "validé",
+    description: "Participation de la Caisse de Secours pour achat ordonnances et frais cliniques."
+  },
+  {
+    id: "exp-03",
+    title: "Location Salle & Rafraîchissements Assemblée Générale Ordinaire",
+    category: "Organisation Réunion",
+    beneficiary: "Centre Socio-Culturel Sacré-Cœur",
+    amount: 35000,
+    date: "2026-09-28",
+    approvedBy: "Ibrahima Konaté (Responsable Org.)",
+    status: "validé",
+    description: "Salle climatisée + bouteilles d'eau, thé à la menthe et jus locaux pour 30 participants."
+  }
+];
+
+export const initialMessages: DiscussionMessage[] = [
+  {
+    id: "msg-01",
+    authorId: "mem-01",
+    authorName: "Fatou Bintou Sow",
+    authorRole: "Président(e)",
+    authorAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    timestamp: "2026-10-25T14:30:00Z",
+    channel: "general",
+    content: "Salam aleykoum chers membres de Jookolante ! Je tiens à féliciter chacun pour l'engagement constant. Le taux de cotisation du mois dernier a atteint 92%. Continuons sur cette belle lancée pour concrétiser nos projets communautaires.",
+    isOfficial: true,
+    reactions: {
+      "👏": ["Moussa Diop", "Cheikh Tidiane Sy", "Mariama Bâ", "Aïssatou Diallo"],
+      "🤲": ["Abdoulaye Wade Sène", "Khadija Ndiaye"]
+    }
+  },
+  {
+    id: "msg-02",
+    authorId: "mem-02",
+    authorName: "Moussa Diop",
+    authorRole: "Trésorier(ère)",
+    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    timestamp: "2026-10-26T09:15:00Z",
+    channel: "bureau",
+    content: "Rappel pour les membres du bureau : les cotisations du mois d'octobre sont ouvertes. Pensez à verser via Wave au 77 450 12 34 ou Orange Money au 78 610 88 99 avec votre nom en motif. Les quittances sont automatiquement générées sur Jookolante.",
+    isOfficial: true,
+    reactions: {
+      "👍": ["Fatou Bintou Sow", "Cheikh Tidiane Sy", "Mariama Bâ"]
+    }
+  },
+  {
+    id: "msg-03",
+    authorId: "mem-07",
+    authorName: "Abdoulaye Wade Sène",
+    authorRole: "Doyen / Conseiller",
+    authorAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
+    timestamp: "2026-10-26T16:45:00Z",
+    channel: "general",
+    content: "Machallah ! Que la paix et la bénédiction soient sur notre belle association. J'ai remis ma contribution en espèces au trésorier Moussa. N'oublions jamais notre devise : Nio Far !",
+    reactions: {
+      "❤️": ["Fatou Bintou Sow", "Khadija Ndiaye", "Seynabou Traoré"],
+      "🤲": ["Moussa Diop", "Cheikh Tidiane Sy"]
+    }
+  },
+  {
+    id: "msg-04",
+    authorId: "mem-05",
+    authorName: "Ibrahima Konaté",
+    authorRole: "Responsable Organisation",
+    authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+    timestamp: "2026-10-27T11:20:00Z",
+    channel: "reunions",
+    content: "Chers membres, pour l'Assemblée Générale de fin d'année et le grand repas de fraternité, nous devons arrêter la date précise. Merci de voter ci-dessous :",
+    isOfficial: true,
+    poll: {
+      id: "poll-01",
+      question: "Quelle date convient le mieux pour notre Assemblée Générale Annuelle ?",
+      closed: false,
+      options: [
+        { id: "opt-1", text: "Samedi 12 Décembre à 15h00", votes: ["mem-01", "mem-02", "mem-03", "mem-06"] },
+        { id: "opt-2", text: "Dimanche 13 Décembre à 10h00", votes: ["mem-04", "mem-07", "mem-08"] },
+        { id: "opt-3", text: "Samedi 19 Décembre à 16h00", votes: ["mem-05", "mem-10"] }
+      ]
+    },
+    reactions: {
+      "🗳️": ["Fatou Bintou Sow", "Mariama Bâ"]
+    }
+  },
+  {
+    id: "msg-05",
+    authorId: "mem-06",
+    authorName: "Aïssatou Diallo",
+    authorRole: "Membre Actif",
+    authorAvatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80",
+    timestamp: "2026-10-27T18:00:00Z",
+    channel: "urgences",
+    content: "Au nom de toute ma famille, je remercie du fond du cœur le bureau et tous les membres de Jookolante pour le soutien reçu lors de l'opération de ma maman. Grâce à Dieu, elle se remet très bien. Jërëjëf !",
+    isUrgent: false,
+    reactions: {
+      "🤲": ["Abdoulaye Wade Sène", "Fatou Bintou Sow", "Moussa Diop", "Mariama Bâ", "Khadija Ndiaye", "Seynabou Traoré"],
+      "❤️": ["Mariama Bâ", "Seynabou Traoré"]
+    }
+  }
+];
+
+export const defaultReminderTemplates = {
+  preventif: "Bonjour {prenom},\nCeci est un rappel amical de l'association {association}. L'échéance de la cotisation mensuelle du mois de {mois} ({montant} FCFA) approche le {jour_echeance} du mois.\nMerci d'effectuer votre versement par Wave au {wave} ou Orange Money au {om}.\nFraternellement, le Trésorier {tresorier}.",
+  echeance: "Salam aleykoum {prenom},\nAujourd'hui c'est le {jour_echeance} du mois ! Nous comptons sur votre cotisation de {montant} FCFA pour {mois} afin de maintenir nos actions d'entraide actives.\nWave : {wave}\nOrange Money : {om}\nMerci pour votre fidélité !",
+  retard: "Bonjour cher(e) {prenom} {nom},\nSauf erreur de notre part, votre cotisation de l'association {association} pour le mois de {mois} ({montant} FCFA) n'a pas encore été enregistrée.\nMerci de bien vouloir régulariser afin de maintenir à jour vos droits d'entraide.\nEn cas de difficulté ou question, contactez le trésorier au {tel_tresorier}.\nMerci pour votre prompte réaction !"
+};
