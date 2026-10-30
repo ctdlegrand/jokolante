@@ -7,12 +7,22 @@ export type MemberRole =
   | 'Membre Actif' 
   | 'Doyen / Conseiller';
 
+export const isBureauRole = (role: MemberRole): boolean => {
+  return [
+    'Président(e)',
+    'Trésorier(ère)',
+    'Secrétaire Général(e)',
+    'Commissaire aux Comptes'
+  ].includes(role);
+};
+
 export type PaymentMethod = 'Wave' | 'Orange Money' | 'Espèces' | 'Virement' | 'Chèque' | 'Free Money';
 
 export type ContributionType = 'cotisation_mensuelle' | 'caisse_secours' | 'droit_adhesion' | 'don_extraordinaire';
 
 export interface Member {
   id: string;
+  matricule: string; // e.g. "JK-2022-001"
   firstName: string;
   lastName: string;
   phone: string;
@@ -25,6 +35,10 @@ export interface Member {
   monthlyPledge: number; // usually 10,000 or 15,000 FCFA
   status: 'active' | 'suspended' | 'honorary';
   occupation?: string;
+  bloodGroup?: string; // e.g. "O+", "A+", "B+", "AB+"
+  emergencyContact?: string;
+  nationalId?: string; // CNI / Passport
+  pin?: string; // 4-digit code for member login
   notes?: string;
 }
 
@@ -41,6 +55,7 @@ export interface ContributionPayment {
   transactionRef?: string;
   recordedBy: string;
   type: ContributionType;
+  verificationHash?: string; // Sceau d'authenticité cryptographique
   note?: string;
 }
 
@@ -52,8 +67,20 @@ export interface ExpenseOrAid {
   amount: number;
   date: string;
   approvedBy: string;
+  secondApprovedBy?: string; // Double validation bureau pour montant > 25k FCFA
   status: 'validé' | 'en_attente' | 'rejeté';
   description: string;
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  actorName: string;
+  actorRole: string;
+  action: 'ENCAISSEMENT' | 'ANNULATION' | 'DECAISSEMENT' | 'VALIDATION_AIDE' | 'NOUVEAU_MEMBRE' | 'SECURITE_BLOCAGE' | 'EXPORT_BACKUP';
+  details: string;
+  amount?: number;
+  receiptNumber?: string;
 }
 
 export interface ReminderItem {

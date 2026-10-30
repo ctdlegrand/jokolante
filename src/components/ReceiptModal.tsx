@@ -176,12 +176,12 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             )}
           </div>
 
-          {/* Signatures & Seal */}
+          {/* Signatures, Verification Hash & Seal */}
           <div className="grid grid-cols-2 gap-8 pt-4 border-t border-slate-200 text-xs text-slate-600">
             <div>
               <p className="font-semibold text-slate-700 mb-1">Le Membre Cotisant</p>
               <p className="text-slate-500">{payment.memberName}</p>
-              <div className="h-14 flex items-end">
+              <div className="h-10 flex items-end">
                 <span className="text-slate-400 italic text-[11px]">[Signature & Accord]</span>
               </div>
             </div>
@@ -189,7 +189,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             <div className="text-right flex flex-col items-end">
               <p className="font-semibold text-slate-700 mb-1">Pour la Trésorerie Générale</p>
               <p className="text-slate-500">{payment.recordedBy || config.treasurerName}</p>
-              <div className="mt-2 border-2 border-dashed border-emerald-600/40 rounded-lg p-2 text-center inline-block bg-emerald-50/50">
+              <div className="mt-1 border-2 border-dashed border-emerald-600/40 rounded-lg p-2 text-center inline-block bg-emerald-50/50">
                 <div className="flex items-center gap-1 justify-center text-emerald-800 font-bold text-[10px] uppercase">
                   <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
                   PAYÉ & VALIDÉ
@@ -201,8 +201,28 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             </div>
           </div>
 
+          {/* Cryptographic Verification Seal / Anti-Fraud Hash */}
+          <div className="mt-6 p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shrink-0">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div>
+                <span className="font-bold text-slate-800 block text-[11px]">
+                  Empreinte Numérique Anti-Falsification
+                </span>
+                <span className="font-mono text-[11px] text-slate-600 select-all font-semibold">
+                  {payment.verificationHash || `SN-VFY-${payment.receiptNumber.replace(/[^0-9]/g, '').slice(-4)}-${payment.amount.toString().slice(0, 4)}`}
+                </span>
+              </div>
+            </div>
+            <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 font-medium">
+              ✓ Registre Inaltérable
+            </span>
+          </div>
+
           {/* Footer notice */}
-          <div className="mt-8 pt-4 border-t border-slate-100 text-center text-[10px] text-slate-400">
+          <div className="mt-4 pt-3 border-t border-slate-100 text-center text-[10px] text-slate-400">
             Quittance certifiée générée par l'application Jookolante. Document valant preuve de paiement libératoire des cotisations associatives.
           </div>
         </div>

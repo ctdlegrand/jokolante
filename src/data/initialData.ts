@@ -21,6 +21,7 @@ export const initialConfig: AssociationConfig = {
 export const initialMembers: Member[] = [
   {
     id: "mem-01",
+    matricule: "JK-2022-001",
     firstName: "Fatou Bintou",
     lastName: "Sow",
     phone: "+221 77 123 45 67",
@@ -33,10 +34,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Cadre Financier",
+    bloodGroup: "O+",
+    emergencyContact: "+221 77 555 11 22 (Époux)",
+    nationalId: "1 755 1988 00412",
+    pin: "1234",
     notes: "Membre fondatrice, très active dans les coordinations."
   },
   {
     id: "mem-02",
+    matricule: "JK-2022-002",
     firstName: "Moussa",
     lastName: "Diop",
     phone: "+221 77 450 12 34",
@@ -49,10 +55,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Comptable Agréé",
+    bloodGroup: "A+",
+    emergencyContact: "+221 77 620 44 55 (Frère)",
+    nationalId: "1 752 1985 00987",
+    pin: "1234",
     notes: "Gestionnaire de la caisse Wave et du compte bancaire."
   },
   {
     id: "mem-03",
+    matricule: "JK-2022-003",
     firstName: "Cheikh Tidiane",
     lastName: "Sy",
     phone: "+221 76 345 89 01",
@@ -65,10 +76,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Ingénieur Télécoms",
+    bloodGroup: "B+",
+    emergencyContact: "+221 76 111 22 33 (Épouse)",
+    nationalId: "1 754 1990 01243",
+    pin: "1234",
     notes: "Rédige les procès-verbaux d'assemblée."
   },
   {
     id: "mem-04",
+    matricule: "JK-2022-004",
     firstName: "Mariama",
     lastName: "Bâ",
     phone: "+221 78 230 45 67",
@@ -81,10 +97,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Auditrice Interne",
+    bloodGroup: "O+",
+    emergencyContact: "+221 78 999 88 77 (Mère)",
+    nationalId: "2 755 1992 00321",
+    pin: "1234",
     notes: "Supervise la conformité des quittances."
   },
   {
     id: "mem-05",
+    matricule: "JK-2022-005",
     firstName: "Ibrahima",
     lastName: "Konaté",
     phone: "+221 77 890 12 34",
@@ -97,10 +118,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Chef d'Entreprise Logistique",
+    bloodGroup: "AB+",
+    emergencyContact: "+221 77 333 44 55 (Frère)",
+    nationalId: "1 751 1982 00654",
+    pin: "1234",
     notes: "Chargé des événements et de la logistique des AG."
   },
   {
     id: "mem-06",
+    matricule: "JK-2022-006",
     firstName: "Aïssatou",
     lastName: "Diallo",
     phone: "+221 77 654 32 10",
@@ -113,10 +139,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Enseignante Chercheuse",
+    bloodGroup: "O+",
+    emergencyContact: "+221 77 222 11 00 (Sœur)",
+    nationalId: "2 756 1989 00876",
+    pin: "1234",
     notes: "Représentante de l'antenne régionale de Thiès."
   },
   {
     id: "mem-07",
+    matricule: "JK-2022-007",
     firstName: "Abdoulaye",
     lastName: "Wade Sène",
     phone: "+221 70 888 77 66",
@@ -129,10 +160,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 15000,
     status: "active",
     occupation: "Inspecteur de l'Éducation à la retraite",
+    bloodGroup: "A-",
+    emergencyContact: "+221 77 444 33 22 (Fils)",
+    nationalId: "1 750 1958 00112",
+    pin: "1234",
     notes: "Médiateur du bureau et doyen d'âge."
   },
   {
     id: "mem-08",
+    matricule: "JK-2022-008",
     firstName: "Khadija",
     lastName: "Ndiaye",
     phone: "+221 77 912 34 56",
@@ -145,10 +181,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Pharmacienne",
+    bloodGroup: "O+",
+    emergencyContact: "+221 77 111 44 77 (Époux)",
+    nationalId: "2 755 1993 00741",
+    pin: "1234",
     notes: "Très ponctuelle, paie souvent par Wave."
   },
   {
     id: "mem-09",
+    matricule: "JK-2023-009",
     firstName: "El Hadji Malick",
     lastName: "Fall",
     phone: "+33 6 12 34 56 78",
@@ -161,10 +202,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 15000,
     status: "active",
     occupation: "Architecte Cloud",
+    bloodGroup: "B+",
+    emergencyContact: "+33 6 98 76 54 32 (Épouse)",
+    nationalId: "1 753 1987 00554",
+    pin: "1234",
     notes: "Cotise en tranches trimestrielles par virement."
   },
   {
     id: "mem-10",
+    matricule: "JK-2023-010",
     firstName: "Ousmane",
     lastName: "Gueye",
     phone: "+221 78 543 21 09",
@@ -177,10 +223,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Commerçant Import-Export",
+    bloodGroup: "O+",
+    emergencyContact: "+221 78 444 55 66 (Frère)",
+    nationalId: "1 754 1986 00339",
+    pin: "1234",
     notes: "Préfère les règlements par Orange Money."
   },
   {
     id: "mem-11",
+    matricule: "JK-2023-011",
     firstName: "Seynabou",
     lastName: "Traoré",
     phone: "+221 77 312 90 45",
@@ -193,10 +244,15 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Graphiste & Communication",
+    bloodGroup: "A+",
+    emergencyContact: "+221 77 888 99 00 (Mère)",
+    nationalId: "2 755 1994 00812",
+    pin: "1234",
     notes: "Gère les visuels des affiches de l'association."
   },
   {
     id: "mem-12",
+    matricule: "JK-2023-012",
     firstName: "Babacar",
     lastName: "Mbodj",
     phone: "+221 76 990 01 22",
@@ -209,6 +265,10 @@ export const initialMembers: Member[] = [
     monthlyPledge: 10000,
     status: "active",
     occupation: "Agronome",
+    bloodGroup: "O+",
+    emergencyContact: "+221 76 777 88 99 (Épouse)",
+    nationalId: "1 752 1991 00248",
+    pin: "1234",
     notes: "En déplacement fréquent pour ses travaux de recherche."
   }
 ];

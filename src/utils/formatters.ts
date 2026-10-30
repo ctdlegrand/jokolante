@@ -36,6 +36,17 @@ export function generateReceiptNumber(seq: number): string {
   return `REC-${year}-${String(seq).padStart(3, '0')}`;
 }
 
+export function generateVerificationHash(receiptNumber: string, memberId: string, amount: number, dateStr: string): string {
+  const seed = `${receiptNumber}:${memberId}:${amount}:${dateStr.slice(0, 10)}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+  return `SN-VFY-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
+}
+
 export function playSuccessChime() {
   try {
     const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();

@@ -9,7 +9,8 @@ import {
   ContributionPayment, 
   ExpenseOrAid, 
   DiscussionMessage, 
-  AssociationConfig 
+  AssociationConfig,
+  AuditLog
 } from './types';
 import { 
   initialConfig, 
@@ -29,13 +30,18 @@ import { ReceiptModal } from './components/ReceiptModal';
 import { NewPaymentModal } from './components/NewPaymentModal';
 import { NewExpenseModal } from './components/NewExpenseModal';
 import { SettingsModal } from './components/SettingsModal';
+import { LoginPage } from './components/LoginPage';
+import { MemberCardModal } from './components/MemberCardModal';
 
 const STORAGE_KEYS = {
   CONFIG: 'jookolante_config_v1',
   MEMBERS: 'jookolante_members_v1',
   PAYMENTS: 'jookolante_payments_v1',
   EXPENSES: 'jookolante_expenses_v1',
-  MESSAGES: 'jookolante_messages_v1'
+  MESSAGES: 'jookolante_messages_v1',
+  AUTH: 'jookolante_auth_v1',
+  ACTIVE_USER_ID: 'jookolante_active_user_v1',
+  AUDIT_LOGS: 'jookolante_audit_logs_v1'
 };
 
 export default function App() {
@@ -85,6 +91,72 @@ export default function App() {
     }
   });
 
+  // Audit Trail State
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+    return [
+      {
+        id: 'log-init-1',
+        action: 'ENCAISSEMENT',
+        details: 'Initialisation du registre de trésorerie Jookolante',
+        actorName: 'Abdoulaye Ndiaye',
+        actorRole: 'Trésorier(ère)',
+        timestamp: new Date().toISOString()
+      }
+    ];
+  });
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      const savedAuth = localStorage.getItem(STORAGE_KEYS.AUTH);
+      // Default to true for ease of review unless explicitly logged out
+      return savedAuth !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  // Current active logged in / simulated user
+  const [activeMember, setActiveMember] = useState<Member>(() => {
+    try {
+      const savedUserId = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER_ID);
+      if (savedUserId) {
+        const found = members.find((m) => m.id === savedUserId);
+        if (found) return found;
+      }
+    } catch {
+      // fallback
+    }
+    const treasurer = members.find((m) => m.role === 'Trésorier(ère)');
+    return treasurer || members[0] || initialMembers[0];
+  });
+
+  // Helper: Record Audit Log
+  const recordAuditLog = (
+    action: AuditLog['action'],
+    details: string,
+    amount?: number,
+    receiptNumber?: string
+  ) => {
+    const newLog: AuditLog = {
+      id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      action,
+      details,
+      amount,
+      receiptNumber,
+      actorName: `${activeMember.firstName} ${activeMember.lastName}`,
+      actorRole: activeMember.role,
+      timestamp: new Date().toISOString()
+    };
+    setAuditLogs((prev) => [newLog, ...prev.slice(0, 99)]);
+  };
+
   // Save to localStorage when state changes
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(config));
@@ -106,12 +178,19 @@ export default function App() {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
   }, [messages]);
 
-  // Current active logged in / simulated user
-  const [activeMember, setActiveMember] = useState<Member>(() => {
-    // Default to the Treasurer (Moussa Diop) or first member
-    const treasurer = members.find((m) => m.role === 'Trésorier(ère)');
-    return treasurer || members[0] || initialMembers[0];
-  });
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify(auditLogs));
+  }, [auditLogs]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.AUTH, isAuthenticated ? 'true' : 'false');
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (activeMember) {
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_USER_ID, activeMember.id);
+    }
+  }, [activeMember]);
 
   // Current View Navigation
   const [currentTab, setCurrentTab] = useState<ActiveTab>('dashboard');
@@ -130,6 +209,9 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeReceiptPayment, setActiveReceiptPayment] = useState<ContributionPayment | null>(null);
 
+  // Member Card Generator Modal State
+  const [cardModalMember, setCardModalMember] = useState<Member | null>(null);
+
   // Global calculations for current month
   const monthPayments = payments.filter(
     (p) => p.periodMonth === currentMonth && p.periodYear === selectedYear
@@ -144,10 +226,25 @@ export default function App() {
   // Handlers for payments
   const handleSavePayment = (payment: ContributionPayment) => {
     setPayments((prev) => [payment, ...prev]);
+    recordAuditLog(
+      'ENCAISSEMENT',
+      `Enregistrement quittance ${payment.receiptNumber} pour ${payment.memberName}`,
+      payment.amount,
+      payment.receiptNumber
+    );
   };
 
   const handleDeletePayment = (paymentId: string) => {
+    const target = payments.find((p) => p.id === paymentId);
     setPayments((prev) => prev.filter((p) => p.id !== paymentId));
+    if (target) {
+      recordAuditLog(
+        'ANNULATION',
+        `Suppression quittance ${target.receiptNumber} (${target.memberName})`,
+        target.amount,
+        target.receiptNumber
+      );
+    }
   };
 
   const handleOpenPaymentModal = (memberId?: string, month?: number, year?: number) => {
@@ -157,9 +254,33 @@ export default function App() {
     setIsNewPaymentOpen(true);
   };
 
+  // Full Database JSON Backup Export
+  const handleExportBackup = () => {
+    const backupData = {
+      app: 'Jookolante',
+      version: '2.0-secure',
+      exportedAt: new Date().toISOString(),
+      association: config.name,
+      config,
+      members,
+      payments,
+      expenses,
+      auditLogs
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `jookolante-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    recordAuditLog('EXPORT_BACKUP', 'Exportation intégrale de la base de données (JSON)');
+  };
+
   // Handlers for members
   const handleAddMember = (newMem: Member) => {
     setMembers((prev) => [...prev, newMem]);
+    recordAuditLog('NOUVEAU_MEMBRE', `Adhésion nouveau membre : ${newMem.firstName} ${newMem.lastName} (${newMem.matricule})`);
   };
 
   const handleUpdateMember = (updated: Member) => {
@@ -180,6 +301,11 @@ export default function App() {
   // Handlers for expenses
   const handleSaveExpense = (newExp: ExpenseOrAid) => {
     setExpenses((prev) => [newExp, ...prev]);
+    recordAuditLog(
+      'DECAISSEMENT',
+      `Décaissement : ${newExp.title} (${newExp.category}) — Bénéficiaire : ${newExp.beneficiary}`,
+      newExp.amount
+    );
   };
 
   // Handlers for discussion
@@ -193,9 +319,7 @@ export default function App() {
         if (msg.id !== messageId || !msg.poll) return msg;
 
         const updatedOptions = msg.poll.options.map((opt) => {
-          // Remove voter from other options in this poll
           const filteredVotes = opt.votes.filter((id) => id !== voterId);
-          // If this is the chosen option, add voter
           if (opt.id === optionId) {
             filteredVotes.push(voterId);
           }
@@ -250,10 +374,37 @@ export default function App() {
     localStorage.clear();
   };
 
+  // Login handlers
+  const handleLoginSuccess = (user: Member) => {
+    setActiveMember(user);
+    setIsAuthenticated(true);
+  };
+
+  const handleRegisterMember = (newMem: Member) => {
+    setMembers((prev) => [...prev, newMem]);
+    setActiveMember(newMem);
+    setIsAuthenticated(true);
+    // Automatically open their new card
+    setCardModalMember(newMem);
+  };
+
   // Receipt lookup member
   const receiptMember = activeReceiptPayment
     ? members.find((m) => m.id === activeReceiptPayment.memberId)
     : undefined;
+
+  // Render Login page if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <LoginPage
+        members={members}
+        config={config}
+        onLoginSuccess={handleLoginSuccess}
+        onRegisterMember={handleRegisterMember}
+        onBypassGuest={() => setIsAuthenticated(true)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
@@ -266,6 +417,8 @@ export default function App() {
         onSelectMember={setActiveMember}
         onOpenNewPayment={() => handleOpenPaymentModal()}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenMyCard={() => setCardModalMember(activeMember)}
+        onLogout={() => setIsAuthenticated(false)}
         config={config}
         totalCollectedMonth={totalCollectedMonth}
         unpaidCount={unpaidCount}
@@ -279,6 +432,7 @@ export default function App() {
             payments={payments}
             expenses={expenses}
             config={config}
+            activeMember={activeMember}
             currentMonth={currentMonth}
             currentYear={selectedYear}
             onOpenNewPayment={() => handleOpenPaymentModal()}
@@ -294,6 +448,7 @@ export default function App() {
             members={members}
             payments={payments}
             config={config}
+            activeMember={activeMember}
             selectedYear={selectedYear}
             onYearChange={setSelectedYear}
             currentMonth={currentMonth}
@@ -315,6 +470,7 @@ export default function App() {
             onDeleteMember={handleDeleteMember}
             onOpenPaymentForMember={(mId) => handleOpenPaymentModal(mId)}
             onShowReceipt={(p) => setActiveReceiptPayment(p)}
+            onGenerateCard={(m) => setCardModalMember(m)}
           />
         )}
 
@@ -368,6 +524,7 @@ export default function App() {
         isOpen={isNewPaymentOpen}
         onClose={() => setIsNewPaymentOpen(false)}
         members={members}
+        existingPayments={payments}
         onSavePayment={handleSavePayment}
         defaultMemberId={paymentPresetMemberId}
         defaultMonth={paymentPresetMonth}
@@ -397,6 +554,15 @@ export default function App() {
         config={config}
         onSaveConfig={setConfig}
         onResetData={handleResetData}
+        onExportBackup={handleExportBackup}
+        auditLogs={auditLogs}
+      />
+
+      {/* Member Card Generation Modal */}
+      <MemberCardModal
+        member={cardModalMember}
+        config={config}
+        onClose={() => setCardModalMember(null)}
       />
     </div>
   );

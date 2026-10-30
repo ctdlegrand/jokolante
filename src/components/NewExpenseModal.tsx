@@ -20,9 +20,12 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({
   const [beneficiary, setBeneficiary] = useState('');
   const [category, setCategory] = useState<ExpenseOrAid['category']>('Secours & Urgence');
   const [amount, setAmount] = useState<number>(25000);
+  const [secondApprover, setSecondApprover] = useState('Aminata Sow (Présidente)');
   const [description, setDescription] = useState('');
 
   if (!isOpen) return null;
+
+  const requiresDualApproval = amount >= 50000;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +39,7 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({
       amount: Number(amount),
       date: new Date().toISOString().slice(0, 10),
       approvedBy: `Bureau Exécutif (${currentRecorder})`,
+      secondApprovedBy: requiresDualApproval ? secondApprover : undefined,
       status: 'validé',
       description: description.trim()
     };
@@ -109,6 +113,31 @@ export const NewExpenseModal: React.FC<NewExpenseModalProps> = ({
               />
             </div>
           </div>
+
+          {requiresDualApproval && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1.5 text-xs text-amber-900">
+              <span className="font-bold flex items-center gap-1.5 text-amber-800">
+                🔒 Règle de Double Signature Exigée (Montant ≥ 50 000 FCFA)
+              </span>
+              <p className="text-[11px] text-amber-700">
+                Conformément aux statuts pour éviter tout abus financier, ce décaissement nécessite l'approbation conjointe de la Présidence ou du Commissariat aux Comptes.
+              </p>
+              <div>
+                <label className="block font-semibold text-amber-900 mt-2 mb-1">
+                  Deuxième signataire approbateur *
+                </label>
+                <select
+                  value={secondApprover}
+                  onChange={(e) => setSecondApprover(e.target.value)}
+                  className="w-full rounded-lg border border-amber-300 p-2 bg-white text-slate-800 font-medium"
+                >
+                  <option value="Aminata Sow (Présidente)">Aminata Sow — Présidente</option>
+                  <option value="Mariama Diallo (Secrétaire Générale)">Mariama Diallo — Secrétaire Générale</option>
+                  <option value="Commissaire aux Comptes">Commissaire aux Comptes</option>
+                </select>
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">Bénéficiaire / Destinataire</label>

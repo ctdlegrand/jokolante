@@ -2,5 +2,7 @@
   "name": "Jookolante - Gestion d'Association & Cotisations",
   "description": "Application de gestion d'association et de tontine : suivi des cotisations mensuelles, tableau de bord financier, relances automatiques et salon de discussion des membres.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

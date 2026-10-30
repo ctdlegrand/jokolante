@@ -17,7 +17,8 @@ import {
   Send, 
   X,
   CreditCard,
-  UserCheck
+  UserCheck,
+  IdCard
 } from 'lucide-react';
 
 interface MembersListProps {
@@ -31,6 +32,7 @@ interface MembersListProps {
   onDeleteMember: (memberId: string) => void;
   onOpenPaymentForMember: (memberId: string) => void;
   onShowReceipt: (p: ContributionPayment) => void;
+  onGenerateCard: (member: Member) => void;
 }
 
 export const MembersList: React.FC<MembersListProps> = ({
@@ -43,7 +45,8 @@ export const MembersList: React.FC<MembersListProps> = ({
   onUpdateMember,
   onDeleteMember,
   onOpenPaymentForMember,
-  onShowReceipt
+  onShowReceipt,
+  onGenerateCard
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('all');
@@ -136,8 +139,11 @@ export const MembersList: React.FC<MembersListProps> = ({
         setSelectedMember(updated);
       }
     } else {
+      const year = new Date().getFullYear();
+      const matricule = `JK-${year}-${String(members.length + 1).padStart(3, '0')}`;
       const newMember: Member = {
         id: `mem-${Date.now()}`,
+        matricule,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim(),
@@ -150,6 +156,8 @@ export const MembersList: React.FC<MembersListProps> = ({
         monthlyPledge: Number(monthlyPledge),
         status: 'active',
         occupation: occupation.trim() || undefined,
+        bloodGroup: 'O+',
+        pin: '1234',
         notes: notes.trim() || undefined
       };
       onAddMember(newMember);
@@ -301,6 +309,13 @@ export const MembersList: React.FC<MembersListProps> = ({
 
                 <div className="flex items-center gap-1">
                   <button
+                    onClick={() => onGenerateCard(member)}
+                    className="p-1.5 text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                    title="Générer la Carte de Membre Officielle"
+                  >
+                    <IdCard className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => onOpenPaymentForMember(member.id)}
                     className="p-1.5 text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
                     title="Encaisser cotisation"
@@ -420,17 +435,30 @@ export const MembersList: React.FC<MembersListProps> = ({
               </div>
 
               {/* Actions Footer */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-                <button
-                  onClick={() => {
-                    setSelectedMember(null);
-                    onOpenPaymentForMember(selectedMember.id);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Enregistrer un Paiement
-                </button>
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const m = selectedMember;
+                      setSelectedMember(null);
+                      onOpenPaymentForMember(m.id);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Enregistrer Paiement
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onGenerateCard(selectedMember);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-xl transition-colors"
+                  >
+                    <IdCard className="w-3.5 h-3.5 text-amber-700" />
+                    Générer Carte
+                  </button>
+                </div>
 
                 <button
                   onClick={() => handleOpenEdit(selectedMember)}

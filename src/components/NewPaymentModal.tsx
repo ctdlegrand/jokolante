@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Member, ContributionPayment, PaymentMethod, ContributionType, AssociationConfig } from '../types';
-import { MONTHS, formatFCFA, generateReceiptNumber, playSuccessChime } from '../utils/formatters';
-import { X, Check, CreditCard, Sparkles } from 'lucide-react';
+import { MONTHS, formatFCFA, generateReceiptNumber, generateVerificationHash, playSuccessChime } from '../utils/formatters';
+import { X, Check, CreditCard, ShieldAlert, AlertTriangle } from 'lucide-react';
 
 interface NewPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   members: Member[];
+  existingPayments?: ContributionPayment[];
   onSavePayment: (payment: ContributionPayment) => void;
   defaultMemberId?: string;
   defaultMonth?: number;
@@ -20,6 +21,7 @@ export const NewPaymentModal: React.FC<NewPaymentModalProps> = ({
   isOpen,
   onClose,
   members,
+  existingPayments = [],
   onSavePayment,
   defaultMemberId,
   defaultMonth = new Date().getMonth() + 1,
@@ -43,6 +45,19 @@ export const NewPaymentModal: React.FC<NewPaymentModalProps> = ({
     selectedMember ? selectedMember.monthlyPledge : config.defaultMonthlyDues
   );
 
+  // Anti-fraud checks
+  const cleanRef = transactionRef.trim();
+  const isDuplicatePeriod = type === 'cotisation_mensuelle' && existingPayments.some(
+    (p) => p.memberId === selectedMemberId &&
+           p.periodMonth === periodMonth &&
+           p.periodYear === periodYear &&
+           p.type === 'cotisation_mensuelle'
+  );
+
+  const isReplayRef = cleanRef.length >= 3 && existingPayments.some(
+    (p) => p.transactionRef && p.transactionRef.trim().toLowerCase() === cleanRef.toLowerCase()
+  );
+
   // Update amount when member changes
   const handleMemberChange = (memberId: string) => {
     setSelectedMemberId(memberId);
@@ -57,18 +72,28 @@ export const NewPaymentModal: React.FC<NewPaymentModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedMember || amount <= 0) return;
+    if (isReplayRef) {
+      alert("Erreur de sécurité : Cette référence de transaction a déjà été enregistrée pour un autre paiement. Merci de vérifier le reçu client.");
+      return;
+    }
+
+    const receiptSeq = Math.floor(Math.random() * 899 + 100);
+    const receiptNumber = generateReceiptNumber(receiptSeq);
+    const paymentDate = new Date().toISOString();
+    const verificationHash = generateVerificationHash(receiptNumber, selectedMember.id, Number(amount), paymentDate);
 
     const newPayment: ContributionPayment = {
       id: `pay-${Date.now()}`,
-      receiptNumber: generateReceiptNumber(Math.floor(Math.random() * 899 + 100)),
+      receiptNumber,
+      verificationHash,
       memberId: selectedMember.id,
       memberName: `${selectedMember.firstName} ${selectedMember.lastName}`,
       periodMonth,
       periodYear,
       amount: Number(amount),
-      paymentDate: new Date().toISOString(),
+      paymentDate,
       paymentMethod,
-      transactionRef: transactionRef.trim() || undefined,
+      transactionRef: cleanRef || undefined,
       recordedBy: currentRecorder,
       type,
       note: note.trim() || undefined
@@ -194,18 +219,42 @@ export const NewPaymentModal: React.FC<NewPaymentModalProps> = ({
             </div>
           </div>
 
+          {/* Anti-Duplicate Warning */}
+          {isDuplicatePeriod && (
+            <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-semibold block">Avertissement : Doublon Détecté</strong>
+                Ce membre possède déjà une cotisation enregistrée pour {MONTHS[periodMonth - 1]} {periodYear}. S'il s'agit d'un rattrapage ou d'un don, changez le type de versement.
+              </div>
+            </div>
+          )}
+
           {/* Transaction Ref */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Référence de transaction (Optionnelle)
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-slate-700">
+                Référence de transaction (Optionnelle)
+              </label>
+              <span className="text-[10px] text-slate-400">Vérification d'unicité en temps réel</span>
+            </div>
             <input
               type="text"
               placeholder="Ex: WAV-984210 ou OM-45812..."
               value={transactionRef}
               onChange={(e) => setTransactionRef(e.target.value)}
-              className="w-full text-sm rounded-xl border border-slate-300 px-3 py-2 font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={`w-full text-sm rounded-xl border px-3 py-2 font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                isReplayRef 
+                  ? 'border-rose-400 bg-rose-50/50 text-rose-900 focus:ring-rose-500' 
+                  : 'border-slate-300 bg-white focus:ring-emerald-500'
+              }`}
             />
+            {isReplayRef && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-rose-700 bg-rose-50 p-2 rounded-lg border border-rose-200">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
+                <span>Sécurité Anti-Rejeu : Cette référence ({cleanRef}) est déjà attribuée à un autre reçu ! Risque de fausse déclaration.</span>
+              </div>
+            )}
           </div>
 
           {/* Note */}
